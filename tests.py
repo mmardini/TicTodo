@@ -1,14 +1,12 @@
-import os
 import unittest
-import tempfile
 
-import tictodo
 from database import db_session
 from models import Task, User
 from tasks_api import tasks_get, tasks_post, task_put
+from authentication_api import check_user, check_account, register_user
 
 
-class TasksAPITestCase(unittest.TestCase):
+class APITestCase(unittest.TestCase):
     def setUp(self):
         self.user1 = User("test-user1", "")
         self.user2 = User("test-user2", "")
@@ -32,6 +30,11 @@ class TasksAPITestCase(unittest.TestCase):
         task3 = Task.query.filter(Task.text == "test-task3").first()
         if task3 is not None:
             db_session.delete(task3)
+            db_session.commit()
+
+        user3 = User.query.filter(User.username == "test-user3").first()
+        if user3 is not None:
+            db_session.delete(user3)
             db_session.commit()
 
     def test_tasks_get(self):
@@ -62,6 +65,26 @@ class TasksAPITestCase(unittest.TestCase):
         # But should be unable to update other users' tasks.
         response2 = task_put(self.task2.id, self.user1.id, order=10)
         self.assertEqual(response2.status_code, 403)
+
+    def test_check_user(self):
+        self.assertEqual(check_user("test-user1"), self.user1.id)
+        self.assertEqual(check_user("user-that-doesnt-exist1"), -1)
+
+    def test_register_check_account(self):
+        # The user doesn't exist yet.
+        self.assertEqual(check_account("test-user3", "correct-pass"), -1)
+
+        # Creating an account should work.
+        self.assertTrue(register_user("test-user3", "correct-pass"))
+
+        # Creating an account shouldn't work if the username already exists.
+        self.assertFalse(register_user("test-user3", "correct-pass"))
+
+        # The username/password combination should work after we registered it.
+        self.assertNotEqual(check_account("test-user3", "correct-pass"), -1)
+
+        # A wrong password shouldn't work though!
+        self.assertEqual(check_account("test-user3", "wrong-pass"), -1)
 
 if __name__ == '__main__':
     unittest.main()
