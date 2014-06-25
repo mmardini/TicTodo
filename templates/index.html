@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+{% block title %}Todos{% endblock %}
+{% block content %}
+    <div class="container" id="app">
+        <div id="new-task">
+            <input type="text" placeholder="What needs to be done?" class="form-text" id="new-task-text" />
+            <button class="form-button" id="new-task-button">Add Todo</button>
+        </div>
+        <ul id="tasks-view"></ul>
+    </div>
+    <div id="footer">
+        <span id="remaining-items"><span id="remaining-num"></span> items left</span>
+        <a id="mark-items">Mark all as complete</a>
+    </div>
+{% endblock %}
