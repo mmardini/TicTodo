@@ -3,7 +3,7 @@ var TasksView = Backbone.View.extend({
     events: {
         'update-order': 'updateOrder',
         'update-done': 'updateDone',
-        'mark-complete': 'markComplete' // Not used. Included for completeness.
+        'mark-complete': 'markComplete'
     },
 
     initialize: function () {
